@@ -409,7 +409,19 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for Inconsistent Effects between nodes
-        return False
+
+        # /aimacode/planning.py contains objects to access the effects:
+        # effect_add contains the +ve effects and effect_add contains the negative effects
+        
+        #If node_a1's (+) effects are canceled by node_a2's (-) effects, then it's a mutex
+        for effect in node_a1.action.effect_add:
+            if effect in node_a2.action.effect_rem:
+                return True
+
+        #If node_a2's (+) effects are canceled by node_a1's (-) effects, again it's a mutex
+        for effect in node_a2.action.effect_add:
+            if effect in node_a1.action.effect_rem:
+                return True
 
     def interference_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:
         """
