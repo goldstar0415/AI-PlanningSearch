@@ -423,6 +423,8 @@ class PlanningGraph():
             if effect in node_a1.action.effect_rem:
                 return True
 
+        return False
+
     def interference_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:
         """
         Test a pair of actions for mutual exclusion, returning True if the 
@@ -438,6 +440,28 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for Interference between nodes
+
+        #If node a1's (+) effects are cancelled by node a2's (-) pre-conditions, it's a mutex
+        for effect in node_a1.action.effect_add:
+            if neg in node_a2.action.precond_neg:
+                return True
+
+        #If node as's (+) effects are cancelled by node a1's (-) pre-conditions, it's a mutex
+        for effect in node_a2.action.effect_add:
+            if neg in node_a1.action.precond_neg:
+                return True
+
+        #If node a1's (-) effects are cancelled by node a2's (+) pre-conditions, it's a mutex
+        for effect in node_a1.action.effect_rem:
+            if pos in node_a2.action.precond_pos:
+                return True
+
+        #If node a2's (-) effects are cancelled by node aa's (+) pre-conditions, it's a mutex
+        for effect in node_a2.action.effect_rem:
+            if pos in node_a2.action.precond_pos:
+                return True
+
+
         return False
 
     def competing_needs_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:
