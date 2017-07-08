@@ -476,6 +476,14 @@ class PlanningGraph():
         """
 
         # TODO test for Competing Needs between nodes
+        # HINT: The PgNode.is_mutex method can be used to test whether two nodes are mutually exclusive.
+
+        # One of the preconditions of one action is a mutex with a precondition of the other.
+        for precond_a1 in node_a1.parents:
+            for precond_a2 in node_a2.parents:
+                if precond_a1.is_mutex(precond_a2):
+                    return True
+
         return False
 
     def update_s_mutex(self, nodeset: set):
@@ -511,6 +519,11 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for negation between nodes
+
+        if node_s1.is_pos != node_s2.is_pos:
+            if node_s1.symbol == node_s2.symbol:
+                return True
+                
         return False
 
     def inconsistent_support_mutex(self, node_s1: PgNode_s, node_s2: PgNode_s):
