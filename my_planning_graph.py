@@ -319,6 +319,10 @@ class PlanningGraph():
             if proposed_PgNode_a.prenodes.issubset(previous_level):
                 a_nodes.append(proposed_PgNode_a)
 
+                for node_s in self.s_levels[level]:
+                    node_s.children.add(proposed_PgNode_a)
+                    proposed_PgNode_a.parents.add(node_s)
+
 
         self.a_levels.append(a_nodes)
 
@@ -442,23 +446,23 @@ class PlanningGraph():
         # TODO test for Interference between nodes
 
         #If node a1's (+) effects are cancelled by node a2's (-) pre-conditions, it's a mutex
-        for effect in node_a1.action.effect_add:
-            if neg in node_a2.action.precond_neg:
+        for pos_effect in node_a1.action.effect_add:
+            if pos_effect in node_a2.action.precond_neg:
                 return True
 
         #If node as's (+) effects are cancelled by node a1's (-) pre-conditions, it's a mutex
-        for effect in node_a2.action.effect_add:
-            if neg in node_a1.action.precond_neg:
+        for pos_effect in node_a2.action.effect_add:
+            if pos_effect in node_a1.action.precond_neg:
                 return True
 
         #If node a1's (-) effects are cancelled by node a2's (+) pre-conditions, it's a mutex
-        for effect in node_a1.action.effect_rem:
-            if pos in node_a2.action.precond_pos:
+        for neg_effect in node_a1.action.effect_rem:
+            if neg_effect in node_a2.action.precond_pos:
                 return True
 
         #If node a2's (-) effects are cancelled by node aa's (+) pre-conditions, it's a mutex
-        for effect in node_a2.action.effect_rem:
-            if pos in node_a2.action.precond_pos:
+        for neg_effect in node_a2.action.effect_rem:
+            if neg_effect in node_a2.action.precond_pos:
                 return True
 
 
@@ -548,8 +552,8 @@ class PlanningGraph():
         for precond_s1 in node_s1.parents:
             for precond_s2 in node_s2.parents:
                 if not precond_s2.is_mutex(precond_s1):
-                    return True
-        return False
+                    return False
+        return True
 
     def h_levelsum(self) -> int:
         """The sum of the level costs of the individual goals (admissible if goals independent)
@@ -563,13 +567,19 @@ class PlanningGraph():
         for goal in self.problem.goal:
             is_goal_found = False
             number_of_levels = len(self.s_levels)
-            for each_level in range(number_of_levels):
+            print(range(number_of_levels))
+            for each_level in range(len(self.s_levels)):
                 for state in self.s_levels[each_level]:
-                    if goal == state.literal:
+                    print(state.symbol)
+                    print(goal)
+                    if goal == state.symbol:
+                        print("Inside If")
+                        print(each_level)
                         is_goal_found = True
                         level_sum += each_level
                         break
                 if is_goal_found:
                     break
-
+        
+        print(level_sum)
         return level_sum
