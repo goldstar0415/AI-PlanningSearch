@@ -567,19 +567,17 @@ class PlanningGraph():
         for goal in self.problem.goal:
             is_goal_found = False
             number_of_levels = len(self.s_levels)
-            print(range(number_of_levels))
             for each_level in range(len(self.s_levels)):
                 for state in self.s_levels[each_level]:
-                    print(state.symbol)
-                    print(goal)
                     if goal == state.symbol:
-                        print("Inside If")
-                        print(each_level)
                         is_goal_found = True
-                        level_sum += each_level
+                        if level_sum == 0:
+                            level_sum = 1
+                        else:
+                            level_sum += each_level
                         break
                 if is_goal_found:
                     break
         
-        print(level_sum)
+        
         return level_sum
